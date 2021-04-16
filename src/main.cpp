@@ -404,18 +404,11 @@ int main()
         // -----
         processInput(window);
 
-        // render
-        // ------
-        /*glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, cubeTexture);*/
-
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // don't forget to clear the stencil buffer!
 
-    //11.NED
+
         shaderG.use();
         glm::mat4 projectionG = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 viewG = camera.GetViewMatrix();
@@ -432,7 +425,6 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
-        //KVADRAT NA SREDINI
         shaderM.use();
         shaderM.setVec3("light.position", lightPos);
         shaderM.setVec3("viewPos", camera.Position);
@@ -449,23 +441,11 @@ int main()
         shaderM.setVec3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
         shaderM.setFloat("material.shininess", 32.0f);
 
-        //KRAJ ZA KVADRAT
 
-
-
-        // draw scene as normal
-        // shader.use();
-        // glm::mat4 model = glm::mat4(1.0f);
-        //glm::mat4 view = camera.GetViewMatrix();
-        //glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
 
 
-        //shader.setMat4("model", model);
-        //shader.setMat4("view", view);
-        // shader.setMat4("projection", projection);
-        //new
         lightingShader.setMat4("projection", projection);
         lightingShader.setMat4("view", view);
         //new
@@ -478,7 +458,7 @@ int main()
 
         //novo
         glBindVertexArray(cubeVAO);
-        for (unsigned int i = 2; i < 10; i++)
+        for (unsigned int i = 2; i < 10; i+=3)
         {
             lightCubeShader.use();
             lightCubeShader.setMat4("view", view);
@@ -486,7 +466,7 @@ int main()
             glm::mat4 modelS = glm::mat4(1.0f);
             modelS = glm::translate(modelS, cubePositions[i]);
             modelS = glm::rotate(modelS, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-            modelS = glm::scale(modelS, glm::vec3(0.15)); // a smaller cube
+            modelS = glm::scale(modelS, glm::vec3(0.22)); // a smaller cube
             lightCubeShader.setMat4("model", modelS);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -498,8 +478,9 @@ int main()
         shaderM.setMat4("view", view);
         shaderM.setMat4("projection", projection);
 
+        //EARTH
         glm::mat4 model1 = glm::mat4(1.0f);
-        model1 = glm::translate(model1, glm::vec3(2.3f, 10.5f, -60.2f));
+        model1 = glm::translate(model1, glm::vec3(5.3f, 25.5f, -60.2f));
         model1 = glm::scale(model1, glm::vec3(3.7f, 3.7f, 3.7f));
         model1 = glm::rotate(model1, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
         shaderM.setMat4("model", model1);
@@ -511,8 +492,8 @@ int main()
         shaderM.setMat4("view", view);
         shaderM.setMat4("projection", projection);
         glm::mat4 model2 = glm::mat4(1.0f);
-        model2 = glm::translate(model2, glm::vec3(83.3f, 7.5f, -25.2f));
-        model2 = glm::scale(model2, glm::vec3(5.0f, 5.0f, 5.0f));
+        model2 = glm::translate(model2, glm::vec3(83.3f, 32.5f, -15.2f));
+        model2 = glm::scale(model2, glm::vec3(6.0f, 6.0f, 6.0f));
         shaderM.setMat4("model", model2);
         moon.Draw(shaderM);
 
@@ -521,7 +502,7 @@ int main()
         shaderM.setMat4("view", view);
         shaderM.setMat4("projection", projection);
         glm::mat4 model6 = glm::mat4(1.0f);
-        model6 = glm::translate(model6, glm::vec3(2.8f,35.35f,-70.0f));
+        model6 = glm::translate(model6, glm::vec3(5.8f,55.35f,-70.0f));
         model6 = glm::rotate(model6, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
         model6= glm::scale(model6, glm::vec3( 0.40f));
         shaderM.setMat4("model", model6);
@@ -529,25 +510,14 @@ int main()
 
 
         //raketa
-        shaderM.use();
+       /* shaderM.use();
         shaderM.setMat4("view", view);
         shaderM.setMat4("projection", projection);
         glm::mat4 model3 = glm::mat4(1.0f);
-        model3 = glm::translate(model3, glm::vec3(50.8f,8.35f,-42.0f));
+        model3 = glm::translate(model3, glm::vec3(50.8f,25.35f,-38.0f));
         model3 = glm::scale(model3, glm::vec3( 0.025f));
         shaderM.setMat4("model", model3);
-        raketa.Draw(shaderM);
-
-        /* shaderM.use();
-         shaderM.setMat4("view", view);
-         shaderM.setMat4("projection", projection);
-         glm::mat4 model4 = glm::mat4(1.0f);
-         model4 = glm::translate(model4, glm::vec3(55.8f,10.35f,55.0f));
-         // model4 = glm::rotate(model4, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
-         model4 = glm::scale(model4, glm::vec3( 0.02f));
-         shaderM.setMat4("model", model4);
-         //shaderM.setFloat("time", glfwGetTime());
-         ship.Draw(shaderM);*/
+        raketa.Draw(shaderM);*/
 
 
         // draw skybox as last
@@ -567,7 +537,6 @@ int main()
         glDepthFunc(GL_LESS); // set depth function back to default
 
 
-        //9.NEDELJA
         // set uniforms
         shaderSingleColor.use();
         glm::mat4 model = glm::mat4(1.0f);
@@ -586,16 +555,13 @@ int main()
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
-        model = glm::translate(model, glm::vec3(-2.0f, 1.0f, -1.0f));
-        //dodala
+        model = glm::translate(model, glm::vec3(-2.0f, 3.0f, -1.0f));
         model = glm::scale(model, glm::vec3( 0.14f));
         model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
         shaderS.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         model = glm::mat4(1.0f);
-        //menjala sa 2 na 1
-        model = glm::translate(model, glm::vec3(1.6f, 1.0f, 0.0f));
-        //dodalaa
+        model = glm::translate(model, glm::vec3(1.6f, 2.5f, 0.0f));
         model = glm::scale(model, glm::vec3( 0.14f));
         model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
         shaderS.setMat4("model", model);
@@ -611,14 +577,13 @@ int main()
         glBindVertexArray(cubeVAO);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-2.0f, 1.0f, -1.0f));
+        model = glm::translate(model, glm::vec3(-2.0f, 3.0f, -1.0f));
         model = glm::scale(model, glm::vec3(scale, scale, scale));
         model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
         shaderSingleColor.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         model = glm::mat4(1.0f);
-        //menjala
-        model = glm::translate(model, glm::vec3(1.6f, 1.0f, 0.0f));
+        model = glm::translate(model, glm::vec3(1.6f, 2.5f, 0.0f));
         model = glm::scale(model, glm::vec3(scale, scale, scale));
         model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
         shaderSingleColor.setMat4("model", model);
