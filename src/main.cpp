@@ -90,22 +90,22 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("resources/shaders/6.1.cubemaps.vs", "resources/shaders/6.1.cubemaps.fs");
-    Shader skyboxShader("resources/shaders/6.1.skybox.vs", "resources/shaders/6.1.skybox.fs");
-    Shader shaderM("resources/shaders/10.2.instancing.vs", "resources/shaders/10.2.instancing.fs");
+    Shader shader("resources/shaders/cubemaps.vs", "resources/shaders/cubemaps.fs");
+    Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
+    Shader shaderM("resources/shaders/instancing.vs", "resources/shaders/instancing.fs");
 
-    Shader shaderS("resources/shaders/2.stencil_testing.vs", "resources/shaders/2.stencil_testing.fs");
-    Shader shaderSingleColor("resources/shaders/2.stencil_testing.vs", "resources/shaders/2.stencil_single_color.fs");
+    Shader shaderS("resources/shaders/stencil_testing.vs", "resources/shaders/stencil_testing.fs");
+    Shader shaderSingleColor("resources/shaders/stencil_testing.vs", "resources/shaders/stencil_single_color.fs");
 
-    Shader shaderG("resources/shaders/1.advanced_lighting.vs", "resources/shaders/1.advanced_lighting.fs");
+    Shader shaderG("resources/shaders/advanced_lighting.vs", "resources/shaders/advanced_lighting.fs");
 
-    Shader lightingShader("resources/shaders/3.1.materials.vs","resources/shaders/3.1.materials.fs");
-    Shader lightCubeShader("resources/shaders/3.1.light_cube.vs", "resources/shaders/3.1.light_cube.fs");
+    Shader lightingShader("resources/shaders/materials.vs","resources/shaders/materials.fs");
+    Shader lightCubeShader("resources/shaders/light_cube.vs", "resources/shaders/light_cube.fs");
 
     Model planet("resources/objects/earth/Earth 2K.obj");
     Model satellite("resources/objects/satelit/satellite_obj.obj");
     Model moon("resources/objects/moon/Moon 2K.obj");
-    Model raketa("resources/objects/raketa/justigue league flying vehicle.obj");
+    Model rocket("resources/objects/raketa/justigue league flying vehicle.obj");
     Model ship("resources/objects/ship/mother ship.obj");
 
 
@@ -497,7 +497,7 @@ int main()
         shaderM.setMat4("model", model2);
         moon.Draw(shaderM);
 
-        //satellite
+        //SATELITE
         shaderM.use();
         shaderM.setMat4("view", view);
         shaderM.setMat4("projection", projection);
@@ -509,15 +509,15 @@ int main()
         satellite.Draw(shaderM);
 
 
-        //raketa
-       /* shaderM.use();
+        //ROCKET
+        shaderM.use();
         shaderM.setMat4("view", view);
         shaderM.setMat4("projection", projection);
         glm::mat4 model3 = glm::mat4(1.0f);
         model3 = glm::translate(model3, glm::vec3(50.8f,25.35f,-38.0f));
         model3 = glm::scale(model3, glm::vec3( 0.025f));
         shaderM.setMat4("model", model3);
-        raketa.Draw(shaderM);*/
+        rocket.Draw(shaderM);
 
 
         // draw skybox as last
