@@ -105,7 +105,7 @@ int main()
     Model planet("resources/objects/earth/Earth 2K.obj");
     Model satellite("resources/objects/satelit/satellite_obj.obj");
     Model moon("resources/objects/moon/Moon 2K.obj");
-    Model rocket("resources/objects/raketa/justigue league flying vehicle.obj");
+    Model rocket("resources/objects/rocket/justigue league flying vehicle.obj");
     Model ship("resources/objects/ship/mother ship.obj");
 
 
@@ -502,7 +502,7 @@ int main()
         shaderM.setMat4("view", view);
         shaderM.setMat4("projection", projection);
         glm::mat4 model6 = glm::mat4(1.0f);
-        model6 = glm::translate(model6, glm::vec3(5.8f,55.35f,-70.0f));
+        model6 = glm::translate(model6, glm::vec3(5.8f,53.35f,-70.0f));
         model6 = glm::rotate(model6, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
         model6= glm::scale(model6, glm::vec3( 0.40f));
         shaderM.setMat4("model", model6);
@@ -515,7 +515,7 @@ int main()
         shaderM.setMat4("projection", projection);
         glm::mat4 model3 = glm::mat4(1.0f);
         model3 = glm::translate(model3, glm::vec3(50.8f,25.35f,-38.0f));
-        model3 = glm::scale(model3, glm::vec3( 0.025f));
+        model3 = glm::scale(model3, glm::vec3( 0.019f));
         shaderM.setMat4("model", model3);
         rocket.Draw(shaderM);
 
