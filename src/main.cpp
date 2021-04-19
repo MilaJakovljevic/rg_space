@@ -28,12 +28,14 @@ bool blinn = false;
 
 //lighting
 glm::vec3 lightPos(5.2f, 5.0f, -2.0f);
+glm::vec3 lightPos3(1.2f, 1.0f, 2.0f);
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
+
 
 // timing
 float deltaTime = 0.0f;
@@ -101,6 +103,9 @@ int main()
 
     Shader lightingShader("resources/shaders/materials.vs","resources/shaders/materials.fs");
     Shader lightCubeShader("resources/shaders/light_cube.vs", "resources/shaders/light_cube.fs");
+
+    Shader lightingShader3("resources/shaders/lighting_maps.vs", "resources/shaders/lighting_maps.fs");
+    Shader lightCubeShader3("resources/shaders/light_cube3.vs", "resources/shaders/light_cube3.fs");
 
     Model planet("resources/objects/earth/Earth 2K.obj");
     Model satellite("resources/objects/satelit/satellite_obj.obj");
@@ -359,8 +364,7 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
 
-    // load textures
-    // -------------
+
     unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/block_solid.png").c_str());
     unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/space.jpg").c_str());
     vector<std::string> faces
@@ -378,6 +382,9 @@ int main()
     // --------------------
     shader.use();
     shader.setInt("texture1", 0);
+
+    lightingShader3.use();
+    lightingShader3.setInt("material.diffuse", 0);
 
     shaderG.use();
     shaderG.setInt("texture1", 0);
@@ -408,6 +415,36 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // don't forget to clear the stencil buffer!
 
+
+
+        lightingShader3.use();
+        lightingShader3.setVec3("light.position", lightPos3);
+        lightingShader3.setVec3("viewPos", camera.Position);
+
+        // light properties
+        lightingShader3.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+        lightingShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
+        lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
+        // material properties
+        lightingShader3.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+        lightingShader3.setFloat("material.shininess", 64.0f);
+
+        // view/projection transformations
+        glm::mat4 projection3 = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 view3 = camera.GetViewMatrix();
+        lightingShader.setMat4("projection", projection3);
+        lightingShader.setMat4("view", view3);
+
+        // world transformation
+        glm::mat4 model8 = glm::mat4(1.0f);
+        lightingShader3.setMat4("model", model8);
+
+        // bind diffuse map
+        glActiveTexture(GL_TEXTURE0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         shaderG.use();
         glm::mat4 projectionG = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -745,4 +782,6 @@ unsigned int loadCubemap(vector<std::string> faces)
 
     return textureID;
 }
+
+
 
