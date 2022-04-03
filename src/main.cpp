@@ -439,7 +439,7 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
 
-//BLENNG
+    //BLENNG
     // transparent VAO
     unsigned int transparentVAO, transparentVBO;
     glGenVertexArrays(1, &transparentVAO);
@@ -462,8 +462,7 @@ int main()
                     FileSystem::getPath("resources/textures/sky/right.jpg"),
                     FileSystem::getPath("resources/textures/sky/left.jpg"),
                     FileSystem::getPath("resources/textures/sky/top.jpg"),
-                    FileSystem::getPath("resources/textures/sk"
-                                        "y/bottom.jpg"),
+                    FileSystem::getPath("resources/textures/sky/bottom.jpg"),
                     FileSystem::getPath("resources/textures/sky/front.jpg"),
                     FileSystem::getPath("resources/textures/sky/back.jpg")
             };
