@@ -5,5 +5,5 @@ Za pomeranje:
 3. ulevo - dugme A
 4. udesno - dugme D
 
-*A grupa - Cubemaps
-*Link ka snimku projekta: https://youtu.be/8ibgxLy78P8
+ -A grupa - Cubemaps
+ -Link ka snimku projekta: https://youtu.be/8ibgxLy78P8
