@@ -20,13 +20,13 @@ void processInput(GLFWwindow *window);
 unsigned int loadTexture(const char *path);
 unsigned int loadCubemap(vector<std::string> faces);
 
+void renderQuad();
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
+float heightScale = 0.005f;
 bool blinn = false;
 
-bool faceculling=true;
 
 //lighting
 glm::vec3 lightPos(5.2f, 5.0f, -2.0f);
@@ -90,7 +90,7 @@ int main()
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     //face culling
     glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CW);
+    glFrontFace(GL_CCW);
     glCullFace(GL_FRONT);
 
 
@@ -116,8 +116,10 @@ int main()
     Shader lightingShader3("resources/shaders/lighting_maps.vs", "resources/shaders/lighting_maps.fs");
     Shader lightCubeShader3("resources/shaders/light_cube3.vs", "resources/shaders/light_cube3.fs");
 
-    Shader shaderFaceC("face_culling.vs", "face_culling.fs");
-    Shader shaderBlend("blending.vs" , "blending.fs");
+    Shader shaderFaceC("resources/shaders/face_culling.vs", "resources/shaders/face_culling.fs");
+    Shader shaderBlend("resources/shaders/blending.vs" , "resources/shaders/blending.fs");
+
+
 
 
 
@@ -177,42 +179,41 @@ int main()
 
 
     float cube[] = {
-            // back face
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Bottom-left
             0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // bottom-right
             0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
             0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
             -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
             -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left
-            // front face
+            // Front face
             -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
             0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
             0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
             0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
             -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
             -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // top-left
-            // left face
+            // Left face
             -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
             -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
             -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-left
             -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
             -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
             -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
-            // right face
+            // Right face
             0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
             0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
             0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
             0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
             0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
             0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
-            // bottom face
+            // Bottom face
             -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
             0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
             0.5f, -0.5f, -0.5f,  1.0f, 1.0f, // top-left
             0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
             -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
             -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
-            // top face
+            // Top face
             -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
             0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
             0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
@@ -345,7 +346,7 @@ int main()
     };
 
 
-    //blending
+
 
     float transparentVertices[] = {
             // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
@@ -439,7 +440,7 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
 
-    //BLENNG
+    //blending
     // transparent VAO
     unsigned int transparentVAO, transparentVBO;
     glGenVertexArrays(1, &transparentVAO);
@@ -467,38 +468,41 @@ int main()
                     FileSystem::getPath("resources/textures/sky/back.jpg")
             };
     unsigned int cubemapTexture = loadCubemap(faces);
-    //BLENDING
-    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/grass.png").c_str());
-    //NEW
+    //blending
+    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/star2.png").c_str());
 
-    unsigned int cube1Texture  = loadTexture(FileSystem::getPath("resources/textures/marble.jpg").c_str());
 
-    //kraj
     unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/block_solid.png").c_str());
     unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/space.jpg").c_str());
-    // transparent vegetation locations
+    // transparent stars locations
     // --------------------------------
-    vector<glm::vec3> vegetation
+    vector<glm::vec3> stars
             {
-                    glm::vec3(7.5f, 5.0f, 3.48f),
-                    glm::vec3( 1.5f, 0.0f, 0.51f),
-                    glm::vec3( 0.0f, 0.0f, 0.7f),
-                    glm::vec3(-0.3f, 0.0f, -2.3f),
-                    glm::vec3 (0.5f, 0.0f, -0.6f)
+                    glm::vec3(0.5f, 2.8f, 1.1f),
+                    glm::vec3( 0.11f, 2.9f, 1.1f),
+                    glm::vec3(-0.5f, 2.7f, 1.1f),
+                    glm::vec3( -0.9f, 2.75f, 1.1f),
+                    glm::vec3(0.0f, 2.65f, 1.1f),
+                    glm::vec3( 0.8f, 2.85f, 1.1f),
+                    glm::vec3(0.5f, 3.0f, 1.1f),
+                    glm::vec3(-0.7f, 2.9f, 1.1f)
+
+
             };
+
+
+
+
+
 
 
     // shader configuration
     // --------------------
     shaderBlend.use();
     shaderBlend.setInt("texture1", 0);
-    //kraj
-    // shader configuration
-    // --------------------
 
     shaderFaceC.use();
     shaderFaceC.setInt("texture1", 0);
-
 
     shader.use();
     shader.setInt("texture1", 0);
@@ -536,7 +540,7 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // don't forget to clear the stencil buffer!
 
-        //blend
+
 
 
 
@@ -591,7 +595,7 @@ int main()
         shaderM.use();
         shaderM.setVec3("light.position", lightPos);
         shaderM.setVec3("viewPos", camera.Position);
-        //new1
+
         // light properties
         shaderM.setVec3("light.ambient", 1.0f, 1.0f, 1.0f); // note that all light colors are set at full intensity
         shaderM.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
@@ -619,7 +623,7 @@ int main()
         glBindVertexArray(cubeVAO1);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        //novo
+
         glDisable(GL_CULL_FACE);
         glBindVertexArray(cubeVAO);
         for (unsigned int i = 2; i < 10; i+=3)
@@ -696,17 +700,17 @@ int main()
         glDisable(GL_CULL_FACE);
         glBindVertexArray(transparentVAO);
         glBindTexture(GL_TEXTURE_2D, transparentTexture);
-        for (unsigned int i = 0; i < vegetation.size(); i++)
+        for (unsigned int i = 0; i < stars.size(); i++)
         {
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, vegetation[i]);
+            model = glm::translate(model, stars[i]);
+            model = glm::scale(model, glm::vec3(0.3f));
             shaderBlend.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
         glEnable(GL_CULL_FACE);
 
-
-        glCullFace(GL_FRONT);
+        glDisable(GL_CULL_FACE);
         // draw skybox as last
        // glDisable(GL_CULL_FACE);
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
@@ -811,11 +815,6 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
-
-    if(glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-        faceculling=!faceculling;
-    else
-        faceculling=!faceculling;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
@@ -942,6 +941,5 @@ unsigned int loadCubemap(vector<std::string> faces)
 
     return textureID;
 }
-
 
 
