@@ -30,7 +30,7 @@ bool blinn = false;
 
 //lighting
 glm::vec3 lightPos(5.2f, 5.0f, -2.0f);
-glm::vec3 lightPos3(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos3(5.8f,58.35f,-70.0f);
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -110,13 +110,8 @@ int main()
 
     Shader shaderG("resources/shaders/advanced_lighting.vs", "resources/shaders/advanced_lighting.fs");
 
-    Shader lightingShader("resources/shaders/materials.vs","resources/shaders/materials.fs");
-    Shader lightCubeShader("resources/shaders/light_cube.vs", "resources/shaders/light_cube.fs");
-
+    Shader lightStarShader("resources/shaders/light_star.vs", "resources/shaders/light_star.fs");
     Shader lightingShader3("resources/shaders/lighting_maps.vs", "resources/shaders/lighting_maps.fs");
-    Shader lightCubeShader3("resources/shaders/light_cube3.vs", "resources/shaders/light_cube3.fs");
-
-    Shader shaderFaceC("resources/shaders/face_culling.vs", "resources/shaders/face_culling.fs");
     Shader shaderBlend("resources/shaders/blending.vs" , "resources/shaders/blending.fs");
 
 
@@ -127,7 +122,7 @@ int main()
     Model satellite("resources/objects/satelit/satellite_obj.obj");
     Model moon("resources/objects/moon/Moon 2K.obj");
     Model rocket("resources/objects/rocket/justigue league flying vehicle.obj");
-    Model ship("resources/objects/ship/mother ship.obj");
+    Model star("resources/objects/star/redstarv.obj");
 
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -478,15 +473,8 @@ int main()
     // --------------------------------
     vector<glm::vec3> stars
             {
-                    glm::vec3(0.5f, 2.8f, 1.1f),
-                    glm::vec3( 0.11f, 2.9f, 1.1f),
-                    glm::vec3(-0.5f, 2.7f, 1.1f),
-                    glm::vec3( -0.9f, 2.75f, 1.1f),
-                    glm::vec3(0.0f, 2.65f, 1.1f),
-                    glm::vec3( 0.8f, 2.85f, 1.1f),
-                    glm::vec3(0.5f, 3.0f, 1.1f),
-                    glm::vec3(-0.7f, 2.9f, 1.1f)
-
+                    glm::vec3(-1.5f, 4.7f, 1.1f),
+                    glm::vec3(-1.5f, 7.7f, 1.1f)
 
             };
 
@@ -501,8 +489,8 @@ int main()
     shaderBlend.use();
     shaderBlend.setInt("texture1", 0);
 
-    shaderFaceC.use();
-    shaderFaceC.setInt("texture1", 0);
+    shaderM.use();
+    shaderM.setInt("texture1", 0);
 
     shader.use();
     shader.setInt("texture1", 0);
@@ -551,8 +539,8 @@ int main()
 
         // light properties
         lightingShader3.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-        lightingShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
-        lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        lightingShader3.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
+        lightingShader3.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
         // material properties
         lightingShader3.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
@@ -561,8 +549,8 @@ int main()
         // view/projection transformations
         glm::mat4 projection3 = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view3 = camera.GetViewMatrix();
-        lightingShader.setMat4("projection", projection3);
-        lightingShader.setMat4("view", view3);
+        lightingShader3.setMat4("projection", projection3);
+        lightingShader3.setMat4("view", view3);
 
         // world transformation
         glm::mat4 model8 = glm::mat4(1.0f);
@@ -584,12 +572,12 @@ int main()
         shaderG.setVec3("lightPos", lightPos);
         shaderG.setInt("blinn", blinn);
         // floor
-        glDisable(GL_CULL_FACE);
+       /* glDisable(GL_CULL_FACE);
         glBindVertexArray(planeeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        glEnable(GL_CULL_FACE);
+        glEnable(GL_CULL_FACE);*/
 
 
         shaderM.use();
@@ -613,33 +601,28 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
 
 
-        lightingShader.setMat4("projection", projection);
-        lightingShader.setMat4("view", view);
+        lightingShader3.setMat4("projection", projection);
+        lightingShader3.setMat4("view", view);
         //new
         // world transformation
         glm::mat4 model5 = glm::mat4(1.0f);
-        lightingShader.setMat4("model", model5);
-        // render the cube
-        glBindVertexArray(cubeVAO1);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        lightingShader3.setMat4("model", model5);
 
 
-        glDisable(GL_CULL_FACE);
-        glBindVertexArray(cubeVAO);
-        for (unsigned int i = 2; i < 10; i+=3)
-        {
-            lightCubeShader.use();
-            lightCubeShader.setMat4("view", view);
-            lightCubeShader.setMat4("projection", projection);
-            glm::mat4 modelS = glm::mat4(1.0f);
-            modelS = glm::translate(modelS, cubePositions[i]);
-            modelS = glm::rotate(modelS, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-            modelS = glm::scale(modelS, glm::vec3(0.22)); // a smaller cube
-            lightCubeShader.setMat4("model", modelS);
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-        glEnable(GL_CULL_FACE);
+
+        lightStarShader.use();
+        lightStarShader.setMat4("view", view);
+        lightStarShader.setMat4("projection", projection);
+        glm::mat4 model6 = glm::mat4(1.0f);
+        model6 = glm::translate(model6, glm::vec3(5.8f,63.35f,-50.0f));
+        model6 = glm::rotate(model6, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+        model6= glm::scale(model6, glm::vec3( 0.40f));
+        lightStarShader.setMat4("model", model6);
+        star.Draw(shaderM);
+
+
+
         glBindTexture(GL_TEXTURE_2D, 0);
         //MODEL
         shaderM.use();
@@ -666,28 +649,16 @@ int main()
         moon.Draw(shaderM);
         glEnable(GL_CULL_FACE);
 
-        //SATELITE
-        shaderM.use();
-        shaderM.setMat4("view", view);
-        shaderM.setMat4("projection", projection);
-        glm::mat4 model6 = glm::mat4(1.0f);
-        model6 = glm::translate(model6, glm::vec3(5.8f,53.35f,-70.0f));
-        model6 = glm::rotate(model6, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
-        model6= glm::scale(model6, glm::vec3( 0.40f));
-        shaderM.setMat4("model", model6);
-        satellite.Draw(shaderM);
-
-
-        //ROCKET
+        //SATELLITE
         shaderM.use();
         shaderM.setMat4("view", view);
         shaderM.setMat4("projection", projection);
         glm::mat4 model3 = glm::mat4(1.0f);
-        model3 = glm::translate(model3, glm::vec3(50.8f,25.35f,-38.0f));
-        model3 = glm::scale(model3, glm::vec3( 0.019f));
+        model3 = glm::translate(model3, glm::vec3(5.8f,53.35f,-70.0f));
+        model3 = glm::rotate(model3, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+        model3= glm::scale(model3, glm::vec3( 0.40f));
         shaderM.setMat4("model", model3);
-        rocket.Draw(shaderM);
-
+        satellite.Draw(shaderM);
 
 
 
