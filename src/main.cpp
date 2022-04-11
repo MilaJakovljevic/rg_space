@@ -538,7 +538,8 @@ int main()
         lightingShader3.setVec3("viewPos", camera.Position);
 
         // light properties
-        lightingShader3.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+
+        lightingShader3.setVec3("light.ambient", 2.0 *cos(currentFrame), 0.2f, 2.0 *sin(currentFrame));
         lightingShader3.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
         lightingShader3.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
@@ -571,13 +572,7 @@ int main()
         shaderG.setVec3("viewPos", camera.Position);
         shaderG.setVec3("lightPos", lightPos);
         shaderG.setInt("blinn", blinn);
-        // floor
-       /* glDisable(GL_CULL_FACE);
-        glBindVertexArray(planeeVAO);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, floorTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glEnable(GL_CULL_FACE);*/
+
 
 
         shaderM.use();
